@@ -1,0 +1,5 @@
+SetEnvIf REFERER "https://example-referer.com" ref_ok
+SetEnvIf Referer "^$" allow_ref
+Order Deny,Allow
+Deny from all
+Allow from env=ref_ok

@@ -1,0 +1,27 @@
+{
+  "name": "netlify-template",
+  "version": "0.0.1",
+  "description": "",
+  "main": "",
+  "scripts": {
+    "build": "node build.js",
+    "prestart": "npm run build",
+    "start": "npx serve dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/olympus/apac_web_migration_static_template.git"
+  },
+  "keywords": [],
+  "author": "Rajesh Sundaram",
+  "license": "ISC",
+  "dependencies": {
+    "@netlify/edge-functions": "^2.12.0",
+    "glob": "^11.0.1",
+    "shelljs": "^0.9.2",
+    "ssi": "./ssi"
+  },
+  "devDependencies": {
+    "@netlify/plugin-lighthouse": "^6.0.1"
+  }
+}

@@ -1,0 +1,12 @@
+# SPECIFIC
+node_modules
+dist
+
+# Local Netlify folder
+.netlify
+
+!.github
+
+# Site Files
+Thumbs.db
+.DS_Store

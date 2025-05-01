@@ -1,0 +1,25 @@
+name: Auto Commit
+
+on:
+  push:
+    branches:
+      - 'site/**'
+jobs:
+  auto-commit:
+    runs-on: ubuntu-latest
+    if: |
+      !contains(github.event.head_commit.message, 'Auto Commit')
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Make changes
+        run: |          
+          echo "${{ github.sha }}" >> update-log.txt
+
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "📢 Auto Commit"
+          token: ${{secrets.AUTOCOMMIT_GH_TOKEN}}
+          # to prevent workflow infinite loop
+          skip-checks: true

@@ -1,0 +1,72 @@
+# NETLIFY CONFIGURATION FILE
+# ==============================================================================
+# https://docs.netlify.com/configure-builds/file-based-configuration/
+
+[Settings]
+ID = "apac_template"
+
+[[plugins]]
+  package = "@netlify/plugin-lighthouse"
+
+[[headers]]
+  # Define which paths this specific [[headers]] block will cover.
+  for = "/*"
+
+  [headers.values]
+    # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
+    Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
+
+    # https://www.w3.org/TR/referrer-policy/
+    # https://infosec.mozilla.org/guidelines/web_security.html#referrer-policy
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+    # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
+    X-Frame-Options = "DENY"
+
+    # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
+    # Prevent browsers from loading scripts and stylesheets unless the server indicates the correct MIME type
+    X-Content-Type-Options = "nosniff"
+
+    # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection
+    X-XSS-Protection = "1; mode=block"
+
+    # https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
+    #   https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/default-src
+    #   https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/script-src
+    #   https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/style-src
+    #   https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/font-src
+    #   https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/img-src
+    #   https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/object-src
+    #   https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/base-uri
+    #   https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-ancestors
+    #
+    # Generic syntax:
+    # Content-Security-Policy = "directive <source> <source>;"
+    #
+    Content-Security-Policy = "base-uri 'self'; connect-src 'self' *.adobedtm.com *.airbrake.io *.algolia.io *.algolia.net *.algolianet.com *.cloudfront.net *.cookielaw.org *.demdex.net *.olympus.com *.olympus.eu *.olympus-europa.com *.omtrdc.net *.onetrust.com *.zscloud.net; default-src 'self' *.adobedtm.com *.cloudfront.net *.cookielaw.org *.demdex.net  *.google.com *.gstatic.com  *.netlify.app *.netlify.com *.olympus.com *.olympus.eu *.omtrdc.net *.onetrust.com *.zscloud.net; font-src 'self' *.cloudfront.net *.olympus.eu; form-action 'self'; frame-ancestors 'none'; img-src 'self' data: *.cloudfront.net *.cookielaw.org *.olympus.com *.olympus.eu *.olympus-europa.com *.omtrdc.net *.zscloud.net; object-src 'none'; script-src 'self' 'unsafe-eval' 'unsafe-inline' *.adobedtm.com *.cloudfront.net *.cookielaw.org *.demdex.net *.google.com *.gstatic.com *.jsdelivr.net netlify-cdp-loader.netlify.app *.olympus.eu *.olympus-europa.com *.omtrdc.net *.onetrust.com *.zscloud.net; style-src 'self' 'unsafe-inline' *.cloudfront.net *.onetrust.com *.jsdelivr.net *.zscloud.net;"
+
+[[edge_functions]]
+  function = "check-referer"
+  path = "/cvs2021-policy*"
+
+[build]
+  base = "/"
+  publish = "dist"
+  command = "npm run build"
+  [build.environment]
+    NODE_VERSION = "20.10.0"
+    NODE_ENV = "development"
+  [build.processing.html]
+    pretty_urls = false
+
+[context.branch-deploy]
+  command = "printf '/*\n  Basic-Auth: olympus:olympus\n  X-Robots-Tag: nocache\n  X-Robots-Tag: nofollow\n  X-Robots-Tag: noindex\n' > ./_headers && npm run build && cp ./_headers ./dist/_headers"
+[context.branch-deploy.environment]
+  NODE_ENV = "development"
+[context.production]
+  ALLOWED_REFERERS = "https://example-referer.com"
+[context.staging]
+[context.development]
+  ALLOWED_REFERERS = "https://example-referer.com"
+
+# REDIRECTS https://docs.netlify.com/routing/redirects/redirect-options/
