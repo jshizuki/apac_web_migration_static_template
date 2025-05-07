@@ -6,11 +6,11 @@ export default async (
 ): Promise<Response> => {
   console.log("Edge function check-referer.ts running!");
 
-  const allowedReferers: string[] =
-    (Netlify.env?.get("ALLOWED_REFERERS") ?? "")
-      .split(",")
-      .map((r: string): string => r.trim())
-      .filter((r: string): boolean => Boolean(r)) || [];
+  const allowedReferers: string[] = ["https://example-referer.com"];
+  // (Netlify.env?.get("ALLOWED_REFERERS") ?? "")
+  //   .split(",")
+  //   .map((r: string): string => r.trim())
+  //   .filter((r: string): boolean => Boolean(r)) || [];
 
   console.log("Allowed referers from env var:", allowedReferers);
 
@@ -28,9 +28,16 @@ export default async (
       status: 403,
       headers: {
         "Content-Type": "text/html",
+        "Netlify-Vary": "header=referer",
+        "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
       },
     });
   }
 
-  return context.next();
+  const response = await context.next();
+
+  response.headers.set("Cache-Control", "public, max-age=3600"); // 1 hour
+  response.headers.set("Netlify-Vary", "header=referer");
+
+  return response;
 };
